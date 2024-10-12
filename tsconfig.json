@@ -1,0 +1,7 @@
+{
+	"extends": "winzig-types/tsconfig/tsconfig.base.json",
+	"compilerOptions": {
+		"types": ["winzig-types"],
+	},
+	"exclude": ["./appfiles/"],
+}

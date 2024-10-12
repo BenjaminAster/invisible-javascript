@@ -1,0 +1,55 @@
+
+:root {
+	font-family: system-ui, sans-serif;
+	font-size-adjust: cap-height from-font;
+	overflow-wrap: break-word;
+	line-height: 1.5;
+	color: light-dark(black, white);
+	background-color: light-dark(white, #111);
+	scrollbar-color: light-dark(#ccc, #333) transparent;
+	scrollbar-width: thin;
+	-webkit-text-size-adjust: none;
+	text-size-adjust: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+:root {
+	color-scheme: light only;
+
+	@media not print {
+		&[data-theme="dark"] {
+			color-scheme: dark only;
+		}
+	}
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	min-block-size: 100dvb;
+	margin: 0;
+	padding-top: env(safe-area-inset-top, 0px);
+	padding-right: env(safe-area-inset-right, 0px);
+	padding-bottom: env(safe-area-inset-bottom, 0px);
+	padding-left: env(safe-area-inset-left, 0px);
+}
+
+a, button, input, textarea {
+	all: unset;
+	cursor: revert;
+	outline: revert;
+}
+
+textarea {
+	display: block;
+	white-space-collapse: preserve;
+}
+
+a {
+	text-decoration-line: underline;
+}
+
+button {
+	cursor: pointer;
+}
