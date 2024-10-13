@@ -11,7 +11,7 @@ winzigConfig: ({
 const storagePrefix = location.pathname + ":";
 
 const ThemeToggle = (() => {
-	const themeInStorage = localStorage.getItem(storagePrefix + "theme");
+	const themeInStorage = localStorage.getItem(storagePrefix + "theme") ?? "auto";
 	const mediaMatch = window.matchMedia("(prefers-color-scheme: light)");
 	let lightTheme$ = (themeInStorage === "auto" && mediaMatch.matches) || themeInStorage === "light";
 	mediaMatch.addEventListener("change", ({ matches }) => lightTheme$ = matches);
@@ -137,7 +137,7 @@ const title = "Invisible JavaScript";
 
 			<label>
 				Allow tab and newline characters (makes the static payload a bit longer)
-				<input type="checkbox" on:change={function (this: HTMLInputElement) {
+				<input type="checkbox" name="allow-tabs-and-newlines" on:change={function (this: HTMLInputElement) {
 					allowTabsAndNewLines = this.checked;
 					handleInput();
 				}} defaultChecked={false} />
