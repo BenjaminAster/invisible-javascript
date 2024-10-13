@@ -41,6 +41,10 @@ a, button, input, textarea {
 	outline: revert;
 }
 
+input {
+	appearance: auto;
+}
+
 textarea {
 	display: block;
 	white-space-collapse: preserve;

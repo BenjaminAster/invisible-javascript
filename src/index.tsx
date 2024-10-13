@@ -37,33 +37,41 @@ const ThemeToggle = (() => {
 let codeOutput$ = "";
 const hangulCharacters = "\u115F\u1160\u3164\uFFA0";
 
-const scriptPreface = [
+let allowTabsAndNewLines = false;
+
+const getScriptPreface = (allowControlCharacters: boolean = false) => [
 	`// static payload:`,
 	`\n`,
 	`s="";`,
 	`for(let i=0;i<4**7;++i)`,
 	`Reflect.defineProperty(`,
 	`self,`,
-	`[...i.toString(4)].map(n=>"${hangulCharacters}"[n]).join(""),`,
+	`[...i.toString(4)${allowControlCharacters ? ".padStart(7)" : ""}]`,
+	`.map(n=>"${hangulCharacters}"[${allowControlCharacters ? "+" : ""}n]).join(""),`,
 	`{get(){i?s+=String.fromCharCode(i>>7,i&127):eval(s)}})`,
 	`\n`,
 	`// invisible code below:`,
 ].join("");
 
 const handleInput = () => {
-	code = scriptPreface;
+	code = getScriptPreface(allowTabsAndNewLines);
 	for (let i = 0; i < textarea.value.length;) {
 		const charCode1 = textarea.value.charCodeAt(i++);
 		const charCode2 = textarea.value.charCodeAt(i++) || 32;
-		if (charCode1 < 32 || charCode1 > 126 || charCode2 < 32 || charCode2 > 126) {
-			codeOutput$ = `Input string contains invalid characters. Please only use characters in the Unicode range U+0020 (SPACE) through U+007E (TILDE)`;
+		if (
+			(!allowTabsAndNewLines && (charCode1 < 32 || charCode2 < 32))
+			|| charCode1 > 126 || charCode2 > 126) {
+			codeOutput$ = `Input string contains invalid characters. `
+				+ `Please only use characters in the Unicode range `
+				+ `${allowTabsAndNewLines ? "U+0001 (<control>: START OF HEADING)" : "U+0020 (SPACE)"} through U+007E (TILDE).`
+				+ (allowTabsAndNewLines ? "" : ` If you want to use tabs and newlines, please check the "Allow tab and newline characters" checkbox above.`);
 			return;
 		}
 		const number = charCode1 * 128 + charCode2;
 		const hangulString = [...number.toString(4).padStart(7, "0")].map(char => hangulCharacters[+char]).join("");
 		code += "\n" + hangulString;
 	}
-	code += "\n" + hangulCharacters[0] + "\n// end of invisible code\n";
+	code += "\n" + hangulCharacters[0].repeat(allowTabsAndNewLines ? 7 : 1) + "\n// end of invisible code\n";
 	codeOutput$ = code;
 };
 
@@ -126,6 +134,25 @@ const title = "Invisible JavaScript";
 			<p>Type or paste some JavaScript code below:</p>
 
 			{textarea}
+
+			<label>
+				Allow tab and newline characters (makes the static payload a bit longer)
+				<input type="checkbox" on:change={function (this: HTMLInputElement) {
+					allowTabsAndNewLines = this.checked;
+					handleInput();
+				}} defaultChecked={false} />
+				{css`
+					& {
+						display: block;
+					}
+
+					input[type=checkbox] {
+						display: inline flow-root;
+						margin-inline-start: .4em;
+						translate: 0 .1em;
+					}
+				`}
+			</label>
 
 			<button on:click={() => navigator.clipboard.writeText(code)}>
 				Copy code
